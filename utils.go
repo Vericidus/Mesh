@@ -5,16 +5,24 @@ import (
 	"fmt"
 )
 
-func (c *ComputeConfig) init() {
+func (c *ComputeConfig) start() error {
 	v, _ := json.MarshalIndent(c, "", " ")
-	fmt.Printf("Initializing with: %s\n", v)
-
-	worker(c)
+	fmt.Printf("Initializing with:\n%s\n", v)
+	ccfg = c
+	return worker()
 }
 
-func (c *ServerConfig) init() {
+func (c *ServerConfig) start() error {
 	v, _ := json.MarshalIndent(c, "", " ")
-	fmt.Printf("Initializing with: %s\n", v)
+	fmt.Printf("Initializing with:\n%s\n", v)
+	scfg = c
+	return server()
+}
 
-	server(c)
+func (c *ComputeConfig) getID() string {
+	return c.Id
+}
+
+func (c *ServerConfig) getID() string {
+	return c.Id
 }

@@ -6,26 +6,25 @@ import (
 	"os"
 )
 
-type ComputeConfig struct {
-	Id string
-
+type MeshConfigBase struct {
+	Id          string
 	Name        string
 	Description []string
+}
 
+type ComputeConfig struct {
+	MeshConfigBase
 	ServerAddress string
 }
 
 type ServerConfig struct {
-	Id string
-
-	Name        string
-	Description []string
-
+	MeshConfigBase
 	Port uint16
 }
 
 type MeshConfig interface {
-	init()
+	getID() string
+	start() error
 }
 
 func parseConfig(path string) (MeshConfig, error) {
@@ -47,8 +46,7 @@ func parseConfig(path string) (MeshConfig, error) {
 func readConfig(path string) ([]byte, error) {
 	cfg, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Println("[E] Failed to read config.")
-		fmt.Println("[EMSG]:", err)
+		fmt.Println("[E] Failed to read config.\n[EMSG]:", err)
 		return nil, err
 	}
 	return cfg, nil
@@ -57,6 +55,7 @@ func readConfig(path string) ([]byte, error) {
 func parseComputeCfg(cfg *[]byte) (*ComputeConfig, error) {
 	var cCfg ComputeConfig
 	if err := json.Unmarshal(*cfg, &cCfg); err != nil {
+		fmt.Println("[E] Config parsing error.\n[EMSG]:", err)
 		return nil, err
 	}
 	return &cCfg, nil
@@ -65,6 +64,7 @@ func parseComputeCfg(cfg *[]byte) (*ComputeConfig, error) {
 func parseServerCfg(cfg *[]byte) (*ServerConfig, error) {
 	var sCfg ServerConfig
 	if err := json.Unmarshal(*cfg, &sCfg); err != nil {
+		fmt.Println("[E] Config parsing error.\n[EMSG]:", err)
 		return nil, err
 	}
 	return &sCfg, nil
