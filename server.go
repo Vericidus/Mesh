@@ -42,8 +42,8 @@ func handleConn(conn net.Conn) {
 				sgl.Id,
 				scfg.Id,
 				time.Now(),
-				SIGNAL_ERR,
-				createError(SIGNAL_ERR, sgl.Id),
+				SIGNAL_DECODE_ERR,
+				createError(SIGNAL_DECODE_ERR, sgl.Id),
 			})
 
 			continue
@@ -63,7 +63,7 @@ func handleSignal(sgl Signal, res *json.Encoder) {
 			"Server",
 			time.Now(),
 			PING,
-			map[string]any{"pong": "pong"},
+			string("PONG"),
 		})
 
 		if err != nil {

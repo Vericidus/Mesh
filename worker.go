@@ -27,13 +27,14 @@ func worker() error {
 		nil,
 	}
 
-	enc.Encode(signal)
-	var response Signal
-	if err := dec.Decode(&response); err != nil {
-		fmt.Println("[E] Decoding server response failed.\n[EMSG]:", err)
-		return err
-	}
+	for {
+		enc.Encode(signal)
+		var response Signal
+		if err := dec.Decode(&response); err != nil {
+			fmt.Println("[E] Decoding server response failed.\n[EMSG]:", err)
+			return err
+		}
 
-	fmt.Println("[INFO] Message:", response)
-	return nil
+		fmt.Println("[INFO] Message:", response)
+	}
 }

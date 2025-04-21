@@ -16,7 +16,7 @@ type Signal struct {
 
 const (
 	PING = 1
-	SIGNAL_ERR
+	SIGNAL_DECODE_ERR
 )
 
 type SignalError struct {
@@ -26,7 +26,7 @@ type SignalError struct {
 func createError(etype int, args ...string) any {
 	var errorStruct any
 	switch etype {
-	case SIGNAL_ERR:
+	case SIGNAL_DECODE_ERR:
 		errorStruct = SignalError{
 			Message: "Decoding message failure for signal with ID:" + args[0]}
 	default:
