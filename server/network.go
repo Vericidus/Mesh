@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"mesh/core"
 	"net"
 	"strconv"
 	"time"
@@ -17,12 +17,12 @@ func server() error {
 	}
 	defer close(ln)
 
-	fmt.Println("[INFO] Server started successfully.")
+	core.Logln("[INFO] Server started successfully.")
 
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			fmt.Println("[E] Connection error.\n[EMSG]:", err)
+			core.Logln("[E] Connection error.\n[EMSG]:", err)
 			continue
 		}
 
@@ -36,14 +36,14 @@ func handleConn(conn net.Conn) {
 	res := json.NewEncoder(conn)
 
 	for {
-		var sgl Signal
+		var sgl core.Signal
 		if err := req.Decode(&sgl); err != nil {
-			res.Encode(Signal{
-				sgl.Id,
-				scfg.Id,
-				time.Now(),
-				SIGNAL_DECODE_ERR,
-				createError(SIGNAL_DECODE_ERR, sgl.Id),
+			res.Encode(core.Signal{
+				Id:     sgl.Id,
+				FromId: scfg.Id,
+				Time:   time.Now(),
+				Type:   core.SIGNAL_DECODE_ERR,
+				Data:   core.CreateError(core.SIGNAL_DECODE_ERR, sgl.Id),
 			})
 
 			continue
@@ -54,20 +54,20 @@ func handleConn(conn net.Conn) {
 	}
 }
 
-func handleSignal(sgl Signal, res *json.Encoder) {
-	fmt.Println("[INFO] Message:", sgl)
+func handleSignal(sgl core.Signal, res *json.Encoder) {
+	core.Logln("[INFO] Message:", sgl)
 	switch sgl.Type {
-	case PING:
-		err := res.Encode(Signal{
-			"2",
-			"Server",
-			time.Now(),
-			PING,
-			string("PONG"),
+	case core.PING:
+		err := res.Encode(core.Signal{
+			Id:     "2",
+			FromId: "Server",
+			Time:   time.Now(),
+			Type:   core.PING,
+			Data:   string("PONG"),
 		})
 
 		if err != nil {
-			fmt.Println("[E] Encoding response signal failed.\n[EMSG]:", err)
+			core.Logln("[E] Encoding response signal failed.\n[EMSG]:", err)
 		}
 	}
 }
@@ -76,7 +76,7 @@ func listen(cfgPort uint16) (net.Listener, error) {
 	port := ":" + strconv.Itoa((int)(cfgPort))
 	ln, err := net.Listen("tcp", port)
 	if err != nil {
-		fmt.Printf("[E] Error listening to %d", cfgPort)
+		core.Logf("[E] Error listening to %d", cfgPort)
 		return nil, err
 	}
 
@@ -85,6 +85,6 @@ func listen(cfgPort uint16) (net.Listener, error) {
 
 func close(ln net.Listener) {
 	if err := ln.Close(); err != nil {
-		fmt.Println("[E] Closing connection failed.", err)
+		core.Logln("[E] Closing connection failed.", err)
 	}
 }

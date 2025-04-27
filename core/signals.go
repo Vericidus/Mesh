@@ -1,11 +1,10 @@
-package main
+package core
 
 import (
-	"fmt"
 	"time"
 )
 
-// REV: Probably a very good candidate for optimizations.
+// REV: Optimize.
 type Signal struct {
 	Id     string
 	FromId string
@@ -23,14 +22,14 @@ type SignalError struct {
 	Message string
 }
 
-func createError(etype int, args ...string) any {
+func CreateError(etype int, args ...string) any {
 	var errorStruct any
 	switch etype {
 	case SIGNAL_DECODE_ERR:
 		errorStruct = SignalError{
 			Message: "Decoding message failure for signal with ID:" + args[0]}
 	default:
-		fmt.Printf("[E] Unknown error type: %d\n", etype)
+		Logf("[E] Unknown error type: %d\n", etype)
 	}
 
 	return errorStruct
