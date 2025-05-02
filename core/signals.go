@@ -6,7 +6,9 @@ import (
 
 // REV: Optimize.
 type Signal struct {
-	Id     string
+	// ComputeNameHash.SequenceNumber - Easily check for duplicated old
+	// messages, know when delivery of a message in b/w failed (possible?)
+	Id     string 
 	FromId string
 	Time   time.Time
 	Type   uint
@@ -14,8 +16,13 @@ type Signal struct {
 }
 
 const (
-	PING = 1
+	PLACEHOLDER = 0
+	PING
+	PONG
 	SIGNAL_DECODE_ERR
+	CONTROL_CONN
+	DATA_CONN
+	PASSTHROUGH // For cases where network is partially partitioned.
 )
 
 type SignalError struct {

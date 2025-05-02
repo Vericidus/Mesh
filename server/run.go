@@ -1,18 +1,18 @@
 package main
 
-import "mesh/core"
+import (
+	"mesh/core"
+)
 
 var Config ServerConfig
 
 func run(c ServerConfig) {
 	Config = c
 
-	listener, err := (Config.Network.Expose).Listen()
-	if err != nil {
-		core.Logf("[FE] Cannot listen on port %d.\n", Config.Network.Expose)
-		panic("NETWORKING")
-	}
-	
+	// TODO: Retry failures
+	// _, _ = core.Connect(&c.Network)
 
-	core.AcceptLinks(listener)
+	lns, _ := core.Listen(&c.Network)
+	_, _ = core.Accept(lns)
+
 }

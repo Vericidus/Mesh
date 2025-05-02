@@ -23,3 +23,5 @@ func main() {
 	core.Logln("Initializing server with:\n", core.PrettyPrint(cfg))
 	run(cfg)
 }
+
+// go run . -config "../test/config/.mesh.server.config"

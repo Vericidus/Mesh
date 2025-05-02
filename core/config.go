@@ -8,6 +8,7 @@ import (
 type BaseConfig struct {
 	General
 	Network Network
+	Storage Storage
 }
 
 type General struct {
@@ -20,8 +21,8 @@ type Port uint16
 type Address string
 
 type Network struct {
-	Expose  Port
-	Connect Address
+	Expose  []Port
+	Connect []Address
 }
 
 type Storage struct {
