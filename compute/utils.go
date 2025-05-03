@@ -10,6 +10,10 @@ func healthChecks(ping core.Signal, pong core.Signal) {
 	clientToServerTime := pong.Time.Sub(ping.Time)
 	serverToClientTime := time.Since(pong.Time)
 
+	core.Logln("Signal Health Check\n",
+		core.Prettify(ping),
+		core.Prettify(pong))
+
 	core.LogTable(
 		core.GenericCol[time.Duration]{Header: "RTT", Rows: []time.Duration{roundTripTime}},
 		core.GenericCol[time.Duration]{Header: "C2S", Rows: []time.Duration{clientToServerTime}},

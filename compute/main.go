@@ -20,8 +20,8 @@ func main() {
 	core.ParseConfig(&cfg, *cpath)
 
 	// Run server
-	core.Logln("Initializing compute with:\n", core.PrettyPrint(cfg))
-	run(cfg)
+	core.Logln("Initializing compute with:\n", core.Prettify(cfg))
+	run()
 }
 
 // go run . -config "../test/config/.mesh.config"

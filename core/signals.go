@@ -8,7 +8,7 @@ import (
 type Signal struct {
 	// ComputeNameHash.SequenceNumber - Easily check for duplicated old
 	// messages, know when delivery of a message in b/w failed (possible?)
-	Id     string 
+	Id     string
 	FromId string
 	Time   time.Time
 	Type   uint
@@ -20,9 +20,9 @@ const (
 	PING
 	PONG
 	SIGNAL_DECODE_ERR
-	CONTROL_CONN
-	DATA_CONN
-	PASSTHROUGH // For cases where network is partially partitioned.
+	CONTROL_CONN // Set as the control conn.
+	DATA_CONN // Set as the data conn.
+	PASSTHROUGH // For partially partitioned networks.
 )
 
 type SignalError struct {

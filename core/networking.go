@@ -70,34 +70,6 @@ func Connect(c *Network) ([]net.Conn, []Address) {
 	return active, failed
 }
 
-func Accept(lns []net.Listener) ([]net.Conn, []net.Listener) {
-	attempts := make([]string, 0)
-	active := make([]net.Conn, 0)
-	failed := make([]net.Listener, 0)
-	errors := make([]error, 0)
-
-	Logln("[INFO] Attempting to accept: ", lns)
-	for _, v := range lns {
-		conn, err := v.Accept()
-		errors = append(errors, err)
-
-		if err == nil {
-			attempts = append(attempts, conn.LocalAddr().Network())
-			active = append(active, conn)
-		} else {
-			attempts = append(attempts, "<nil>")
-			failed = append(failed, v)
-		}
-	}
-
-	LogTable(
-		GenericCol[net.Listener]{"Address", lns},
-		GenericCol[string]{"Conn", attempts},
-		GenericCol[error]{"Error", errors})
-
-	return active, failed
-}
-
 func (p Port) Listen() (net.Listener, error) {
 	port := ":" + strconv.Itoa((int)(p))
 	return net.Listen("tcp", port)
@@ -116,3 +88,5 @@ func (a Address) Connect() (net.Conn, error) {
 
 	P2: Optimize with multiple links ?
 */
+
+const SOCKET_ADDR = "/tmp/socketaaaaaa"

@@ -18,11 +18,13 @@ func Logf(s string, a ...any) {
 	fmt.Printf(s, a...)
 }
 
-// Pretty print structs
+// Must support json.MarshalIndent
 type Struct any
 
-func PrettyPrint(a Struct) string {
-	b, _ := json.MarshalIndent(a, "", "  ")
+// Pretty print structs
+func Prettify(a Struct) string {
+	b, e := json.MarshalIndent(a, "", "  ")
+	Logln(e)
 	return string(b)
 }
 
@@ -46,7 +48,7 @@ func (c GenericCol[T]) len() int {
 }
 
 func (c GenericCol[T]) cell(i int) string {
-	
+
 	return fmt.Sprint(c.Rows[i])
 }
 
@@ -64,18 +66,32 @@ func LogTable(v ...TableColumn) {
 		totalWidth += colWidths[j]
 	}
 
-	for range totalWidth + (len(colWidths))*3 - 1 {
-		Logf("-")
+	printWidth := totalWidth + (len(colWidths))*3 + 1
+	printDashes(printWidth)
+
+	// Header
+	for range 1 {
+		Logf("| ")
+		for j := range len(v) {
+			Logf("%-*s | ", colWidths[j], v[j].header())
+		}
+		Logln()
 	}
-	Logln()
+	printDashes(printWidth)
+
+	// Rows
 	for i := range v[0].len() {
-		Logf("|")
+		Logf("| ")
 		for j := range len(v) {
 			Logf("%-*s | ", colWidths[j], v[j].cell(i))
 		}
 		Logln()
 	}
-	for range totalWidth + (len(colWidths))*3 - 1 {
+	printDashes(printWidth)
+}
+
+func printDashes(width int) {
+	for range width {
 		Logf("-")
 	}
 	Logln()

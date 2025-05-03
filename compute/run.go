@@ -9,14 +9,11 @@ import (
 	"github.com/google/uuid"
 )
 
-var config ComputeConfig
-
-func run(c ComputeConfig) {
-	config = c
+func run() {
 
 	// TODO: Retry failures & accept conns from computes.
 	// _, _ := core.Listen(&c.Network)
-	conns, _ := core.Connect(&c.Network)
+	conns, _ := core.Connect(&cfg.Network)
 
 	for _, conn := range conns {
 		go handleConn(conn)
@@ -24,22 +21,10 @@ func run(c ComputeConfig) {
 
 	// TODO: retry failed conns.
 
-	// encs := core.NewEncoders(conns)
-	// decs := core.NewDecoders(conns)
-
-	// // Send / receive PING and measure latency, RTT.
-	// // Tabulate this for better routing later on.
-	// // TODO: Do this periodically in a go routine.
-	// core.SmartHealthCheck(encs, decs)
-	
-	// // Receive a message
-	// // Start a shell
-	// // Receive a msg from a program IPC socket
-	// // Process and send to server
+	select {}
 }
 
 func handleConn(conn net.Conn) error {
-
 	enc := core.NewEncoder(conn)
 	dec := core.NewDecoder(conn)
 
@@ -52,22 +37,49 @@ func handleConn(conn net.Conn) error {
 		Data:   nil,
 	}
 
-	enc.Encode(ping)
+	if err := enc.Encode(ping); err != nil {
+		core.Logln("[E] Encoding ping failed.\n[EMGS]: ", err)
+	}
+
 	var pong core.Signal
 	if err := dec.Decode(&pong); err != nil {
 		core.Logln("[E] Decoding pong failed.\n[EMGS]: ", err)
 	}
 
+	// TODO: Make this periodic and affect routing decisions.
 	healthChecks(ping, pong)
 
 	go readMessages()
-	// go processMessages()
+	go processMessages()
 
 	return nil
 }
 
-func readMessages() {
-	// net.Listen("unix")
+func readMessages() error {
+	conn, err := net.Dial("unix", core.SOCKET_ADDR)
+
+	if err != nil {
+		core.Logln("[E] Failed to open socket.\n[EMSG]: ", err)
+		return err
+	}
+
+	// enc := core.NewEncoder(conn)
+	enc := core.NewEncoder(conn)
+
+	pong := core.Signal{
+		Id:     uuid.New().String(),
+		FromId: cfg.Name,
+		Time:   time.Now(),
+		Type:   core.PONG,
+		Data:   nil,
+	}
+	if err := enc.Encode(&pong); err != nil {
+		core.Logln("[E] Decoding ping failed.\n[EMGS]: ", err)
+	}
+
+	core.Logln("Socket message: ", core.Prettify(pong))
+
+	return nil
 }
 
-// Have a UDP socket open too for extremely high throughput logs.
+func processMessages() {}
